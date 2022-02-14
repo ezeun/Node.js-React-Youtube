@@ -4,6 +4,7 @@ const router = express.Router();
 
 const { auth } = require("../middleware/auth");
 const multer = require("multer");
+var ffmpeg = require("fluent-ffmpeg");
 
 //STORAGE MULTER CONFIG
 let storage = multer.diskStorage({
@@ -36,9 +37,50 @@ router.post("/uploads", (req, res) => { //req을 통해 files를 받음
         if(err){
             return res.json({ success: false, err})
         }
-        return res.json({ success: true, url: res.req.file.path, fileName: res.req.file.filename })
+        return res.json({ success: true, url: res.req.file.path, fileName: res.req.file.filename }) //성공
     })
 });
 
+router.post("/thumbnail", (req, res) => { 
+    
+    //썸네일을 생성하고 비디오 러닝타임 정보도 가져오기
+    
+    let filePath ="";
+    let fileDuration = ""
+
+    //비디오 정보 가져오기
+    //ffmpeg.setFfmpegPath('C:\\..\\..\\bin\\ffmpeg.exe')
+    ffmpeg.ffprobe(req.body.url, function (err, metadata){
+        console.dir(metadata); //all metadata
+        console.log(metadata.format.duration);
+
+        fileDuration = metadata.format.duration;
+    });
+
+    //썸네일 생성
+    ffmpeg(req.body.url) //url : 클라이언트에서 온 비디오 저장 경로(uploads)
+    .on('filenames', function (filenames) { //비디오 썸네일 파일명 생성
+        console.log('Will generate ' + filenames.join(', '))
+        console.log(filenames)
+
+        filePath = "uploads/thumbnails/" + filenames[0] 
+    })
+    .on('end', function () { //썸네일 생성 후 하는 일들
+        console.log('Screenshots taken');
+        return res.json({ success: true, url: filePath, fileDuration: fileDuration }); //성공
+    })
+    .on('error', function (err) { //에러 발생 시
+        console.error(err);
+        return res.json({ success: false, err });
+    })
+    .screenshots({
+        //Will take screenshots at 20%, 40%, 60% and 80% of the video
+        count: 3, //몇 개의 썸네일을 찍을 지
+        folder: 'uploads/thumbnails', //uploads/thumbnails/ 여기에 썸네일이 저장됨
+        size: '320x240',
+        //'%b': input basename (filename w/o extension)
+        filename: 'thumbnail-%b.png'
+    })
+});
 
 module.exports = router;
