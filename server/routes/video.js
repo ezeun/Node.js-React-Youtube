@@ -44,12 +44,23 @@ router.post("/uploads", (req, res) => { //req을 통해 files를 받음
 router.post("/uploadVideo", (req, res) => { 
     
     //비디오 정보들을 mongoDB에 저장한다
-    
+
     const video = new Video(req.body) //req.body : client에서 보낸 variables 모든 정보
     video.save((err, doc)=> {  //mongoDB 메소드를 이용해서 모든 정보를 mongoDB에 저장
         if(err) return res.json({ success: false, err })
         res.status(200).json({ success: true })
     })
+});
+
+router.get("/getVideos", (req, res) => { 
+    
+    //비디오를 DB에서 가져와서 클라이언트에 보낸다
+    Video.find()
+        .populate('writer')
+        .exec((err, videos)=> {
+            if(err) return res.status(400).send(err);
+            res.status(200).json({ success: true, videos})
+        })
 });
 
 router.post("/thumbnail", (req, res) => { 
