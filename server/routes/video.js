@@ -105,4 +105,14 @@ router.post("/thumbnail", (req, res) => {
     })
 });
 
+router.post("/getVideoDetail", (req, res) => {
+    
+    Video.findOne({ "_id": req.body.videoId })
+        .populate('writer') //user의 모든 정보를 가져오기
+        .exec((err, videoDetail) => {
+            if(err) return res.status(400).send(err)
+            return res.status(200).json({ success: true, videoDetail })
+        })
+});
+
 module.exports = router;
