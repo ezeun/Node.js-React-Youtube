@@ -25,6 +25,10 @@ function VideoDetailPage(props) {
     }, [])
 
     if(VideoDetail.writer){
+
+        //내가 올린 영상(userTo===userFrom)이면 구독버튼 안보이게
+        const subscribeButton = VideoDetail.writer._id !==localStorage.getItem('userId') && <Subscribe userTo={VideoDetail.writer._id} userFrom={localStorage.getItem('userId')} />
+
         return (
             <Row gutter={[16,16]}>
                 <Col lg={18} xs={24}> 
@@ -33,7 +37,7 @@ function VideoDetailPage(props) {
                         <video style={{width:'100%'}} src={`http://localhost:5000/${VideoDetail.filePath}`} controls />
     
                         <List.Item
-                            actions={[<Subscribe userTo={VideoDetail.writer._id} userFrom={localStorage.getItem('userId')} />]} //Subscribe.js 참고
+                            actions={[ subscribeButton ]} //Subscribe.js 참고
                         >
                             <List.Item.Meta
                                 avatar={<Avatar src={VideoDetail.writer.image} />}
