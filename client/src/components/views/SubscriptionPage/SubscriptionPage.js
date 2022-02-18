@@ -6,17 +6,26 @@ import moment from 'moment';
 const { Title } = Typography
 const { Meta } = Card;
 
-function LandingPage() {
+function SubscriptionPage() {
 
-    const [Video, setVideo] = useState([])
+    const [Videos, setVideos] = useState([])
 
     useEffect(() => {
 
-        Axios.get('api/video/getVideos')
+        /*
+        본인이 구독하는 모든 사람의 비디오 가져오기 
+        : 현재 로그인 된 본인의 아이디 -> 본인이 구독하는 사람 -> 그 사람들의 비디오 가져오기
+        */
+        const subscriptionVariables = {
+            userFrom: localStorage.getItem('userId')
+        }        
+
+
+        Axios.post('api/video/getSubscriptionVideos', subscriptionVariables)
         .then(response => {
             if(response.data.success){
-                console.log(response.data)
-                setVideo(response.data.videos)
+                console.log(response.data.videos)
+                setVideos(response.data.videos)
             }else{
                 alert('비디오 가져오기를 실패 했습니다.')
             }
@@ -25,8 +34,7 @@ function LandingPage() {
     }, [])
 
 
-    //비디오 데이터를 스크린에 출력하기
-    const renderCards = Video.map((video, index) => {
+    const renderCards = Videos.map((video, index) => {
         
         var minutes = Math.floor(video.duration / 60);
         var seconds = Math.floor((video.duration - minutes * 60));
@@ -72,4 +80,4 @@ function LandingPage() {
     )
 }
 
-export default LandingPage
+export default SubscriptionPage
