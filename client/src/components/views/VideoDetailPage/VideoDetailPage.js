@@ -21,8 +21,7 @@ function VideoDetailPage(props) {
                 }else{
                     alert('비디오 정보를 가져오길 실패했습니다.')
                 }
-            })
-
+            }) 
     }, [])
 
     if(VideoDetail.writer){
@@ -48,7 +47,7 @@ function VideoDetailPage(props) {
                         </List.Item>
     
                         {/* Comments */}
-                        <Comment />
+                        <Comment postId={videoId} />
                     </div>
                 </Col>
 
