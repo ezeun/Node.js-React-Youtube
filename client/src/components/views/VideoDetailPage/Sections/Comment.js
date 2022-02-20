@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Axios from 'axios'
 import { useSelector } from 'react-redux'
+import SingleComment from './SingleComment';
 
 function Comment(props) {
 
@@ -26,6 +27,8 @@ function Comment(props) {
       .then(response => {
         if(response.data.success){
             console.log(response.data.result)
+            setcommentValue("")
+            props.refreshFunction(response.data.result) //댓글 업데이트
         }else{
             alert('커멘트를 저장하지 못했습니다.')
         }
@@ -40,6 +43,12 @@ function Comment(props) {
 
         {/* Coment Lists */}
 
+        {props.commentLists && props.commentLists.map((comment, index) => (
+            (!comment.responseTo &&//첫번째 depth만 출력
+                <SingleComment refreshFunction={props.refreshFunction} comment={comment} postId={props.videoId} />
+            )
+        ))}
+        
 
         {/* Root Comment Form */}
 
