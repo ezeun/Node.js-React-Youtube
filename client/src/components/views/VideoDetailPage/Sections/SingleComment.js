@@ -16,7 +16,7 @@ function SingleComment(props) {
     }
 
     const onHandleChange = (event) => {
-        setCommentValue(event.currentTarget.CommentValue)
+        setCommentValue(event.currentTarget.value)
     }
 
     const onSubmit = (event) => {
@@ -34,6 +34,7 @@ function SingleComment(props) {
           if(response.data.success){
               console.log(response.data.result)
               setCommentValue("")
+              setOpenReply(false) //대댓글 작성&submit하면 대댓글 작성 칸 숨기기
               props.refreshFunction(response.data.result) //댓글 업데이트
           }else{
               alert('커멘트를 저장하지 못했습니다.')
